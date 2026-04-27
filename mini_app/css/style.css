@@ -1,0 +1,220 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--tg-theme-bg-color, #ffffff);
+    color: var(--tg-theme-text-color, #000000);
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0;
+}
+
+header {
+    background: var(--tg-theme-button-color, #3390ec);
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+header h1 {
+    font-size: 24px;
+}
+
+.tabs {
+    display: flex;
+    background: var(--tg-theme-secondary-bg-color, #f0f0f0);
+    border-bottom: 1px solid #ddd;
+}
+
+.tab {
+    flex: 1;
+    padding: 15px;
+    border: none;
+    background: transparent;
+    font-size: 16px;
+    cursor: pointer;
+    color: var(--tg-theme-text-color, #000);
+}
+
+.tab.active {
+    background: var(--tg-theme-bg-color, #fff);
+    border-bottom: 3px solid var(--tg-theme-button-color, #3390ec);
+}
+
+.tab-content {
+    display: none;
+    padding: 15px;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.filters {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 15px;
+    overflow-x: auto;
+}
+
+.filter-btn {
+    padding: 8px 16px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    background: white;
+    cursor: pointer;
+    white-space: nowrap;
+    font-size: 14px;
+}
+
+.filter-btn.active {
+    background: var(--tg-theme-button-color, #3390ec);
+    color: white;
+    border-color: var(--tg-theme-button-color, #3390ec);
+}
+
+.task-card {
+    background: var(--tg-theme-secondary-bg-color, #f9f9f9);
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    border: 1px solid #eee;
+}
+
+.task-card:active {
+    opacity: 0.7;
+}
+
+.task-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.priority {
+    font-size: 20px;
+}
+
+.task-card h3 {
+    font-size: 16px;
+    margin: 0;
+}
+
+.task-due {
+    font-size: 14px;
+    color: var(--tg-theme-hint-color, #999);
+    margin: 5px 0;
+}
+
+.task-status {
+    font-size: 13px;
+    color: var(--tg-theme-hint-color, #666);
+}
+
+.empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--tg-theme-hint-color, #999);
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+input, textarea, select {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    background: var(--tg-theme-bg-color, #fff);
+    color: var(--tg-theme-text-color, #000);
+}
+
+textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.btn-primary {
+    padding: 14px;
+    background: var(--tg-theme-button-color, #3390ec);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-primary:active {
+    opacity: 0.8;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: var(--tg-theme-bg-color, #fff);
+    padding: 20px;
+    border-radius: 12px;
+    max-width: 90%;
+    max-height: 80%;
+    overflow-y: auto;
+    position: relative;
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 28px;
+    cursor: pointer;
+    color: var(--tg-theme-hint-color, #999);
+}
+
+.detail-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn-success {
+    flex: 1;
+    padding: 12px;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.btn-danger {
+    flex: 1;
+    padding: 12px;
+    background: #f44336;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}

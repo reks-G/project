@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskControl</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📋 TaskControl</h1>
+        </header>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('tasks')">Задачи</button>
+            <button class="tab" onclick="showTab('create')">Создать</button>
+        </div>
+
+        <div id="tasks-tab" class="tab-content active">
+            <div class="filters">
+                <button class="filter-btn active" onclick="filterTasks('active')">Активные</button>
+                <button class="filter-btn" onclick="filterTasks('today')">Сегодня</button>
+                <button class="filter-btn" onclick="filterTasks('week')">Неделя</button>
+                <button class="filter-btn" onclick="filterTasks('overdue')">Просрочено</button>
+            </div>
+            <div id="tasks-list"></div>
+        </div>
+
+        <div id="create-tab" class="tab-content">
+            <form id="task-form">
+                <input type="text" id="title" placeholder="Название задачи" required>
+                <textarea id="description" placeholder="Описание"></textarea>
+                <input type="datetime-local" id="due_at">
+                <select id="priority">
+                    <option value="low">🟢 Низкий</option>
+                    <option value="medium" selected>🟡 Средний</option>
+                    <option value="high">🔴 Высокий</option>
+                </select>
+                <button type="submit" class="btn-primary">Создать задачу</button>
+            </form>
+        </div>
+
+        <div id="task-detail" class="modal" style="display:none;">
+            <div class="modal-content">
+                <span class="close" onclick="closeDetail()">&times;</span>
+                <div id="detail-content"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.ready();
+
+        const userId = tg.initDataUnsafe?.user?.id || 123456;
+        const userName = tg.initDataUnsafe?.user?.username || 'user';
+        const firstName = tg.initDataUnsafe?.user?.first_name || 'User';
+
+        let currentFilter = 'active';
+
+        async function initUser() {
+            await fetch('/api/user', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    telegram_id: userId,
+                    username: userName,
+                    first_name: firstName
+                })
+            });
+            loadTasks();
+        }
+
+        async function loadTasks() {
+            const response = await fetch(`/api/tasks?telegram_id=${userId}&filter=${currentFilter}`);
+            const tasks = await response.json();
+            
+            const container = document.getElementById('tasks-list');
+            
+            if (tasks.length === 0) {
+                container.innerHTML = '<div class="empty">Задач нет</div>';
+                return;
+            }
+
+            container.innerHTML = tasks.map(task => {
+                const priorityIcon = {low: '🟢', medium: '🟡', high: '🔴'}[task.priority];
+                const dueDate = task.due_at ? new Date(task.due_at).toLocaleString('ru') : 'Без срока';
+                const statusText = {
+                    pending: 'В ожидании',
+                    in_progress: 'В работе',
+                    completed: 'Завершено',
+                    overdue: 'Просрочено'
+                }[task.status];
+                
+                return `
+                    <div class="task-card" onclick="showDetail(${task.id})">
+                        <div class="task-header">
+                            <span class="priority">${priorityIcon}</span>
+                            <h3>${task.title}</h3>
+                        </div>
+                        <p class="task-due">📅 ${dueDate}</p>
+                        <p class="task-status">${statusText}</p>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function showDetail(taskId) {
+            const response = await fetch(`/api/tasks?telegram_id=${userId}&filter=all`);
+            const tasks = await response.json();
+            const task = tasks.find(t => t.id === taskId);
+            
+            if (!task) return;
+
+            const priorityIcon = {low: '🟢', medium: '🟡', high: '🔴'}[task.priority];
+            const dueDate = task.due_at ? new Date(task.due_at).toLocaleString('ru') : 'Без срока';
+            
+            document.getElementById('detail-content').innerHTML = `
+                <h2>${task.title}</h2>
+                <p>${task.description || 'Нет описания'}</p>
+                <p><strong>${priorityIcon} Приоритет:</strong> ${task.priority}</p>
+                <p><strong>📅 Срок:</strong> ${dueDate}</p>
+                <div class="detail-actions">
+                    <button class="btn-success" onclick="completeTask(${task.id})">✅ Завершить</button>
+                    <button class="btn-danger" onclick="deleteTask(${task.id})">🗑 Удалить</button>
+                </div>
+            `;
+            
+            document.getElementById('task-detail').style.display = 'block';
+        }
+
+        function closeDetail() {
+            document.getElementById('task-detail').style.display = 'none';
+        }
+
+        async function completeTask(taskId) {
+            await fetch(`/api/tasks/${taskId}`, {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    telegram_id: userId,
+                    status: 'completed'
+                })
+            });
+            closeDetail();
+            loadTasks();
+            tg.showAlert('Задача выполнена!');
+        }
+
+        async function deleteTask(taskId) {
+            if (!confirm('Удалить задачу?')) return;
+            
+            await fetch(`/api/tasks/${taskId}?telegram_id=${userId}`, {
+                method: 'DELETE'
+            });
+            closeDetail();
+            loadTasks();
+            tg.showAlert('Задача удалена');
+        }
+
+        function showTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tab + '-tab').classList.add('active');
+        }
+
+        function filterTasks(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            loadTasks();
+        }
+
+        document.getElementById('task-form').onsubmit = async (e) => {
+            e.preventDefault();
+            
+            const data = {
+                telegram_id: userId,
+                title: document.getElementById('title').value,
+                description: document.getElementById('description').value,
+                due_at: document.getElementById('due_at').value || null,
+                priority: document.getElementById('priority').value
+            };
+
+            await fetch('/api/tasks', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
+
+            document.getElementById('task-form').reset();
+            showTab('tasks');
+            loadTasks();
+            tg.showAlert('Задача создана!');
+        };
+
+        initUser();
+    </script>
+</body>
+</html>
