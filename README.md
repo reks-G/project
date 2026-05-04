@@ -1,6 +1,28 @@
 # TaskControl Mini App
 
-Telegram Mini App для управления задачами.
+Telegram Mini App для управления задачами. Полностью на Python без JavaScript.
+
+## Структура проекта
+
+```
+TaskControl/
+├── main.py              # Точка входа
+├── app.py               # Flask приложение
+├── bot.py               # Telegram бот
+├── config.py            # Настройки
+├── requirements.txt
+├── database/
+│   ├── models.py
+│   ├── session.py
+│   └── __init__.py
+├── templates/           # HTML шаблоны (Jinja2)
+│   ├── base.html
+│   ├── index.html
+│   ├── create.html
+│   └── detail.html
+└── static/
+    └── style.css
+```
 
 ## Установка
 
@@ -11,28 +33,23 @@ npm install -g localtunnel
 
 ## Настройка
 
-Открой main.py и измени:
-- `BOT_TOKEN` - токен от @BotFather
-- `WEBAPP_URL` - URL от localtunnel (по умолчанию https://taskcontrol.loca.lt)
+Открой config.py и измени BOT_TOKEN
 
 ## Запуск
 
-1. В одном терминале запусти localtunnel:
+1. Запусти localtunnel:
 ```bash
 lt --port 5000 --subdomain taskcontrol
 ```
 
-2. В другом терминале запусти приложение:
+2. Запусти приложение:
 ```bash
 python main.py
 ```
 
-Всё! Flask и бот запустятся автоматически.
+## Особенности
 
-## Функции
-
-- Создание задач
-- Фильтрация задач
-- Просмотр деталей
-- Отметка выполненных
-- Удаление задач
+- Серверный рендеринг на Python (Jinja2)
+- Без JavaScript
+- Модульная структура
+- Flask + Telebot

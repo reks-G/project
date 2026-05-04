@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}{{ task.title }} - TaskControl{% endblock %}
+
+{% block content %}
+<div class="detail-container">
+    <a href="{{ url_for('index', telegram_id=telegram_id) }}" class="back-link">
+        <svg class="icon icon--sm">
+            <use href="#icon-arrow-left"></use>
+        </svg>
+        Назад к задачам
+    </a>
+    
+    <div class="task-detail">
+        <!-- Task Header -->
+        <div class="task-header" style="margin-bottom: var(--space-5);">
+            <span class="priority" 
+                  aria-label="Приоритет {{ task.priority.value }}"
+                  role="img">
+                {{ priority_levels[task.priority.value] }}
+            </span>
+            <h2 style="margin: 0;">{{ task.title }}</h2>
+        </div>
+        
+        <!-- Task Description -->
+        {% if task.description %}
+        <div style="margin-bottom: var(--space-6);">
+            <h3 style="font-size: var(--font-size-sm); color: var(--color-text-secondary); margin-bottom: var(--space-3);">
+                Описание
+            </h3>
+            <p class="description">{{ task.description }}</p>
+        </div>
+        {% endif %}
+        
+        <!-- Task Meta Information -->
+        <div class="task-info">
+            <div style="display: grid; gap: var(--space-4);">
+                <div>
+                    <strong style="color: var(--color-text-secondary); font-size: var(--font-size-xs); text-transform: uppercase; letter-spacing: var(--letter-spacing-wide);">
+                        Приоритет
+                    </strong>
+                    <p style="margin-top: var(--space-2); display: flex; align-items: center; gap: var(--space-2);">
+                        <span>{{ priority_levels[task.priority.value] }}</span>
+                        <span style="text-transform: capitalize;">{{ task.priority.value }}</span>
+                    </p>
+                </div>
+                
+                <div>
+                    <strong style="color: var(--color-text-secondary); font-size: var(--font-size-xs); text-transform: uppercase; letter-spacing: var(--letter-spacing-wide);">
+                        Статус
+                    </strong>
+                    <p style="margin-top: var(--space-2);">
+                        <span class="task-meta__status task-meta__status--{{ task.status.value }}">
+                            {{ status_types[task.status.value] }}
+                        </span>
+                    </p>
+                </div>
+                
+                <div>
+                    <strong style="color: var(--color-text-secondary); font-size: var(--font-size-xs); text-transform: uppercase; letter-spacing: var(--letter-spacing-wide);">
+                        Срок выполнения
+                    </strong>
+                    <p style="margin-top: var(--space-2); display: flex; align-items: center; gap: var(--space-2);">
+                        <svg class="icon icon--sm" style="color: var(--color-text-tertiary);">
+                            <use href="#icon-calendar"></use>
+                        </svg>
+                        <span>{% if task.due_at %}{{ task.due_at.strftime('%d.%m.%Y %H:%M') }}{% else %}Без срока{% endif %}</span>
+                    </p>
+                </div>
+                
+                <div>
+                    <strong style="color: var(--color-text-secondary); font-size: var(--font-size-xs); text-transform: uppercase; letter-spacing: var(--letter-spacing-wide);">
+                        Создано
+                    </strong>
+                    <p style="margin-top: var(--space-2);">
+                        {{ task.created_at.strftime('%d.%m.%Y %H:%M') }}
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="detail-actions">
+            {% if task.status.value != 'completed' %}
+            <a href="{{ url_for('complete_task', task_id=task.id, telegram_id=telegram_id) }}" 
+               class="btn-success"
+               aria-label="Отметить задачу как выполненную">
+                <svg class="icon icon--sm">
+                    <use href="#icon-check"></use>
+                </svg>
+                Завершить задачу
+            </a>
+            {% endif %}
+            <a href="{{ url_for('delete_task', task_id=task.id, telegram_id=telegram_id) }}" 
+               class="btn-danger"
+               onclick="return confirm('Вы уверены что хотите удалить эту задачу?')"
+               aria-label="Удалить задачу">
+                <svg class="icon icon--sm">
+                    <use href="#icon-trash"></use>
+                </svg>
+                Удалить задачу
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

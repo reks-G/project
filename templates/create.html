@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Создать задачу - TaskControl{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <a href="{{ url_for('index', telegram_id=request.args.get('telegram_id', 123456)) }}" class="back-link">
+        <svg class="icon icon--sm">
+            <use href="#icon-arrow-left"></use>
+        </svg>
+        Назад к задачам
+    </a>
+    
+    <h2>Создать новую задачу</h2>
+    
+    {% if errors %}
+    <div class="error-banner" role="alert">
+        <ul class="error-list">
+            {% for error in errors %}
+            <li class="error-item">{{ error }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    
+    <form method="POST">
+        <div class="form-field">
+            <label for="title" class="form-field__label">Название задачи *</label>
+            <input 
+                type="text" 
+                id="title"
+                name="title" 
+                class="form-field__input"
+                placeholder="Введите название задачи" 
+                maxlength="500"
+                required
+                aria-required="true">
+        </div>
+        
+        <div class="form-field">
+            <label for="description" class="form-field__label">Описание</label>
+            <textarea 
+                id="description"
+                name="description" 
+                class="form-field__input"
+                placeholder="Добавьте описание задачи..."
+                aria-label="Описание задачи"></textarea>
+        </div>
+        
+        <div class="form-field">
+            <label for="priority" class="form-field__label">Приоритет</label>
+            <select 
+                id="priority"
+                name="priority" 
+                class="form-field__input"
+                aria-label="Приоритет задачи">
+                <option value="low">🟢 Низкий приоритет</option>
+                <option value="medium" selected>🟡 Средний приоритет</option>
+                <option value="high">🔴 Высокий приоритет</option>
+            </select>
+        </div>
+        
+        <div class="form-field">
+            <label for="due_at" class="form-field__label">Срок выполнения</label>
+            <input 
+                type="datetime-local" 
+                id="due_at"
+                name="due_at"
+                class="form-field__input"
+                aria-label="Срок выполнения задачи">
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit" class="btn-primary">
+                <svg class="icon icon--sm">
+                    <use href="#icon-check"></use>
+                </svg>
+                Создать задачу
+            </button>
+            <a href="{{ url_for('index', telegram_id=request.args.get('telegram_id', 123456)) }}" 
+               class="btn-secondary">
+                Отмена
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

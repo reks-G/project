@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}Задачи - TaskControl{% endblock %}
+
+{% block content %}
+<!-- Top Bar with Title and Controls -->
+<div class="topbar">
+    <h1 class="topbar__title">Задачи</h1>
+    <div class="topbar__controls">
+        <!-- View Switcher -->
+        <div class="topbar__view-switcher" role="group" aria-label="Режим просмотра">
+            <a href="{{ url_for('index', telegram_id=telegram_id, view='list', filter=filter_type) }}" 
+               class="topbar__btn {% if view_mode == 'list' or not view_mode %}active{% endif %}"
+               {% if view_mode == 'list' or not view_mode %}aria-current="true"{% endif %}>
+                <svg class="icon icon--sm">
+                    <use href="#icon-list"></use>
+                </svg>
+                Список
+            </a>
+            <a href="{{ url_for('index', telegram_id=telegram_id, view='timeline', filter=filter_type) }}" 
+               class="topbar__btn {% if view_mode == 'timeline' %}active{% endif %}"
+               {% if view_mode == 'timeline' %}aria-current="true"{% endif %}>
+                <svg class="icon icon--sm">
+                    <use href="#icon-clock"></use>
+                </svg>
+                Время
+            </a>
+            <a href="{{ url_for('index', telegram_id=telegram_id, view='board', filter=filter_type) }}" 
+               class="topbar__btn {% if view_mode == 'board' %}active{% endif %}"
+               {% if view_mode == 'board' %}aria-current="true"{% endif %}>
+                <svg class="icon icon--sm">
+                    <use href="#icon-grid"></use>
+                </svg>
+                Доска
+            </a>
+        </div>
+        
+        <!-- Create Task Button -->
+        <a href="{{ url_for('create_task', telegram_id=telegram_id) }}" 
+           class="topbar__btn topbar__btn--primary"
+           aria-label="Создать новую задачу">
+            <svg class="icon icon--sm">
+                <use href="#icon-plus"></use>
+            </svg>
+            Создать задачу
+        </a>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="filters" role="group" aria-label="Фильтры задач">
+    <a href="{{ url_for('index', telegram_id=telegram_id, filter='all', view=view_mode) }}" 
+       class="filter-btn {% if filter_type == 'all' or not filter_type %}active{% endif %}"
+       {% if filter_type == 'all' or not filter_type %}aria-current="true"{% endif %}>
+        Все
+    </a>
+    <a href="{{ url_for('index', telegram_id=telegram_id, filter='active', view=view_mode) }}" 
+       class="filter-btn {% if filter_type == 'active' %}active{% endif %}"
+       {% if filter_type == 'active' %}aria-current="true"{% endif %}>
+        Активные
+    </a>
+    <a href="{{ url_for('index', telegram_id=telegram_id, filter='today', view=view_mode) }}" 
+       class="filter-btn {% if filter_type == 'today' %}active{% endif %}"
+       {% if filter_type == 'today' %}aria-current="true"{% endif %}>
+        Сегодня
+    </a>
+    <a href="{{ url_for('index', telegram_id=telegram_id, filter='week', view=view_mode) }}" 
+       class="filter-btn {% if filter_type == 'week' %}active{% endif %}"
+       {% if filter_type == 'week' %}aria-current="true"{% endif %}>
+        Неделя
+    </a>
+    <a href="{{ url_for('index', telegram_id=telegram_id, filter='overdue', view=view_mode) }}" 
+       class="filter-btn {% if filter_type == 'overdue' %}active{% endif %}"
+       {% if filter_type == 'overdue' %}aria-current="true"{% endif %}>
+        Просрочено
+    </a>
+</div>
+
+<!-- Tasks Grid -->
+<div class="tasks-grid" role="region" aria-label="Список задач">
+    {% if tasks %}
+        {% for task in tasks %}
+        <article class="task-card">
+            <a href="{{ url_for('task_detail', task_id=task.id, telegram_id=telegram_id) }}" 
+               class="task-card__link"
+               aria-label="Просмотр деталей задачи {{ task.title }}">
+                <div class="task-header">
+                    <span class="priority" 
+                          aria-label="Приоритет {{ task.priority.value }}"
+                          role="img">
+                        {{ priority_levels[task.priority.value] }}
+                    </span>
+                    <h3>{{ task.title }}</h3>
+                </div>
+                <div class="task-meta">
+                    <span class="task-meta__item">
+                        <svg class="icon icon--sm" style="color: var(--color-text-tertiary);">
+                            <use href="#icon-calendar"></use>
+                        </svg>
+                        <span>{% if task.due_at %}{{ task.due_at.strftime('%d.%m.%Y %H:%M') }}{% else %}Без срока{% endif %}</span>
+                    </span>
+                    <span class="task-meta__item task-meta__status task-meta__status--{{ task.status.value }}">
+                        {{ status_types[task.status.value] }}
+                    </span>
+                </div>
+            </a>
+        </article>
+        {% endfor %}
+    {% else %}
+        <!-- Empty State -->
+        <div class="empty-state" role="status">
+            <div class="empty-state__icon" aria-hidden="true">
+                <svg class="icon" style="width: 64px; height: 64px; color: var(--color-text-tertiary); opacity: 0.5;">
+                    <use href="#icon-check-square"></use>
+                </svg>
+            </div>
+            <h2 class="empty-state__title">
+                {% if filter_type and filter_type != 'all' %}
+                    Нет задач по выбранному фильтру
+                {% else %}
+                    Пока нет задач
+                {% endif %}
+            </h2>
+            <p class="empty-state__message">
+                {% if filter_type and filter_type != 'all' %}
+                    Попробуйте изменить фильтры или создайте новую задачу
+                {% else %}
+                    Создайте свою первую задачу чтобы начать
+                {% endif %}
+            </p>
+            <a href="{{ url_for('create_task', telegram_id=telegram_id) }}" 
+               class="empty-state__action topbar__btn topbar__btn--primary">
+                <svg class="icon icon--sm">
+                    <use href="#icon-plus"></use>
+                </svg>
+                Создать задачу
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
