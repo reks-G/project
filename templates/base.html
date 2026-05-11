@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}TaskControl{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <!-- SVG Icons Sprite -->
+    {% include 'icons.svg' %}
+    
+    <!-- Skip to main content link for accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <aside class="sidebar" role="complementary" aria-label="Боковая навигация">
+        <!-- Logo Section -->
+        <div class="sidebar__logo">
+            <div class="sidebar__logo-icon" aria-hidden="true">
+                <svg class="icon icon--lg" style="stroke-width: 2.5;">
+                    <use href="#icon-logo"></use>
+                </svg>
+            </div>
+            <span class="sidebar__logo-text">TaskControl</span>
+        </div>
+        
+        <!-- Main Navigation -->
+        <nav class="sidebar__nav" role="navigation" aria-label="Главная навигация">
+            <h3 class="sidebar__section-title">ГЛАВНОЕ МЕНЮ</h3>
+            <ul class="sidebar__nav-list">
+                <li class="sidebar__nav-item">
+                    <a href="{{ url_for('index', telegram_id=request.args.get('telegram_id', 123456)) }}" 
+                       class="sidebar__nav-link {% if request.endpoint == 'index' %}sidebar__nav-link--active{% endif %}"
+                       {% if request.endpoint == 'index' %}aria-current="page"{% endif %}>
+                        <svg class="icon">
+                            <use href="#icon-check-square"></use>
+                        </svg>
+                        <span>Задачи</span>
+                    </a>
+                </li>
+                <li class="sidebar__nav-item">
+                    <a href="#" class="sidebar__nav-link">
+                        <svg class="icon">
+                            <use href="#icon-calendar"></use>
+                        </svg>
+                        <span>Календарь</span>
+                    </a>
+                </li>
+                <li class="sidebar__nav-item">
+                    <a href="#" class="sidebar__nav-link">
+                        <svg class="icon">
+                            <use href="#icon-bell"></use>
+                        </svg>
+                        <span>Уведомления</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        
+        <!-- Create Task Button -->
+        <a href="{{ url_for('create_task', telegram_id=request.args.get('telegram_id', 123456)) }}" 
+           class="sidebar__create-btn">
+            <svg class="icon icon--sm">
+                <use href="#icon-plus"></use>
+            </svg>
+            <span>Создать задачу</span>
+        </a>
+    </aside>
+    
+    <main class="main-content" id="main-content" role="main">
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}Редактировать задачу - TaskControl{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <a href="{{ url_for('task_detail', task_id=task.id, telegram_id=telegram_id) }}" class="back-link">
+        <svg class="icon icon--sm">
+            <use href="#icon-arrow-left"></use>
+        </svg>
+        Назад к задаче
+    </a>
+    
+    <h2>Редактировать задачу</h2>
+    
+    {% if errors %}
+    <div class="error-banner" role="alert">
+        <ul class="error-list">
+            {% for error in errors %}
+            <li class="error-item">{{ error }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    
+    <form method="POST">
+        <div class="form-field">
+            <label for="title" class="form-field__label">Название задачи *</label>
+            <input 
+                type="text" 
+                id="title"
+                name="title" 
+                class="form-field__input"
+                placeholder="Введите название задачи" 
+                maxlength="500"
+                value="{{ task.title }}"
+                required
+                aria-required="true">
+        </div>
+        
+        <div class="form-field">
+            <label for="description" class="form-field__label">Описание</label>
+            <textarea 
+                id="description"
+                name="description" 
+                class="form-field__input"
+                placeholder="Добавьте описание задачи..."
+                aria-label="Описание задачи">{{ task.description or '' }}</textarea>
+        </div>
+        
+        <div class="form-field">
+            <label for="priority" class="form-field__label">Приоритет</label>
+            <select 
+                id="priority"
+                name="priority" 
+                class="form-field__input"
+                aria-label="Приоритет задачи">
+                <option value="low" {% if task.priority.value == 'low' %}selected{% endif %}>🟢 Низкий приоритет</option>
+                <option value="medium" {% if task.priority.value == 'medium' %}selected{% endif %}>🟡 Средний приоритет</option>
+                <option value="high" {% if task.priority.value == 'high' %}selected{% endif %}>🔴 Высокий приоритет</option>
+            </select>
+        </div>
+        
+        <div class="form-field">
+            <label for="due_at" class="form-field__label">Срок выполнения</label>
+            <input 
+                type="datetime-local" 
+                id="due_at"
+                name="due_at"
+                class="form-field__input"
+                value="{% if task.due_at %}{{ task.due_at.strftime('%Y-%m-%dT%H:%M') }}{% endif %}"
+                aria-label="Срок выполнения задачи">
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit" class="btn-primary">
+                <svg class="icon icon--sm">
+                    <use href="#icon-check"></use>
+                </svg>
+                Сохранить изменения
+            </button>
+            <a href="{{ url_for('task_detail', task_id=task.id, telegram_id=telegram_id) }}" 
+               class="btn-secondary">
+                Отмена
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}
