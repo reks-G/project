@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text, Enum
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text, Enum, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from datetime import datetime
@@ -40,8 +40,6 @@ class Task(Base):
     due_at = Column(DateTime)
     priority = Column(Enum(PriorityEnum), default=PriorityEnum.medium)
     status = Column(Enum(StatusEnum), default=StatusEnum.pending)
-    reminded_24h = Column(Integer, default=0)
-    reminded_1h = Column(Integer, default=0)
-    reminded_now = Column(Integer, default=0)
+    notified = Column(Boolean, default=False)  # Флаг уведомления за 30 минут
     
     user = relationship('User', back_populates='tasks')

@@ -2,6 +2,7 @@ import threading
 from app import app
 from bot import bot
 from database import init_db
+from scheduler import start_scheduler
 
 def run_bot():
     """Запуск Telegram бота"""
@@ -10,6 +11,9 @@ def run_bot():
 
 if __name__ == '__main__':
     init_db()
+    
+    # Запуск планировщика уведомлений
+    start_scheduler()
     
     # Запуск бота в отдельном потоке
     bot_thread = threading.Thread(target=run_bot, daemon=True)
