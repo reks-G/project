@@ -48,16 +48,32 @@
         </div>
         
         <div class="form-field">
-            <label for="priority" class="form-field__label">Приоритет</label>
-            <select 
-                id="priority"
-                name="priority" 
-                class="form-field__input"
-                aria-label="Приоритет задачи">
-                <option value="low">🟢 Низкий приоритет</option>
-                <option value="medium" selected>🟡 Средний приоритет</option>
-                <option value="high">🔴 Высокий приоритет</option>
-            </select>
+            <label class="form-field__label">Приоритет</label>
+            <div class="priority-buttons">
+                <input type="radio" name="priority" value="low" id="priority-low" class="priority-btn__input">
+                <label for="priority-low" class="priority-btn priority-btn--low">
+                    <svg class="icon icon--sm">
+                        <use href="#icon-priority-low"></use>
+                    </svg>
+                    Низкий
+                </label>
+                
+                <input type="radio" name="priority" value="medium" id="priority-medium" class="priority-btn__input" checked>
+                <label for="priority-medium" class="priority-btn priority-btn--medium">
+                    <svg class="icon icon--sm">
+                        <use href="#icon-priority-medium"></use>
+                    </svg>
+                    Средний
+                </label>
+                
+                <input type="radio" name="priority" value="high" id="priority-high" class="priority-btn__input">
+                <label for="priority-high" class="priority-btn priority-btn--high">
+                    <svg class="icon icon--sm">
+                        <use href="#icon-priority-high"></use>
+                    </svg>
+                    Высокий
+                </label>
+            </div>
         </div>
         
         <div class="form-field">
@@ -77,16 +93,10 @@
                 </svg>
                 Создать задачу
             </button>
-            <a href="{{ url_for('index', telegram_id=telegram_id) }}" class="btn-secondary">
+            <a href="{{ url_for('index', telegram_id=request.args.get('telegram_id', 123456)) }}" class="btn-secondary">
                 <svg class="icon">
                     <use href="#icon-x"></use>
                 </svg>
-                Отмена
-            </a>
-        </div>
-            </button>
-            <a href="{{ url_for('index', telegram_id=request.args.get('telegram_id', 123456)) }}" 
-               class="btn-secondary">
                 Отмена
             </a>
         </div>

@@ -49,16 +49,32 @@
         </div>
         
         <div class="form-field">
-            <label for="priority" class="form-field__label">Приоритет</label>
-            <select 
-                id="priority"
-                name="priority" 
-                class="form-field__input"
-                aria-label="Приоритет задачи">
-                <option value="low" {% if task.priority.value == 'low' %}selected{% endif %}>🟢 Низкий приоритет</option>
-                <option value="medium" {% if task.priority.value == 'medium' %}selected{% endif %}>🟡 Средний приоритет</option>
-                <option value="high" {% if task.priority.value == 'high' %}selected{% endif %}>🔴 Высокий приоритет</option>
-            </select>
+            <label class="form-field__label">Приоритет</label>
+            <div class="priority-buttons">
+                <input type="radio" name="priority" value="low" id="priority-low" class="priority-btn__input" {% if task.priority.value == 'low' %}checked{% endif %}>
+                <label for="priority-low" class="priority-btn priority-btn--low">
+                    <svg class="icon icon--sm">
+                        <use href="#icon-priority-low"></use>
+                    </svg>
+                    Низкий
+                </label>
+                
+                <input type="radio" name="priority" value="medium" id="priority-medium" class="priority-btn__input" {% if task.priority.value == 'medium' %}checked{% endif %}>
+                <label for="priority-medium" class="priority-btn priority-btn--medium">
+                    <svg class="icon icon--sm">
+                        <use href="#icon-priority-medium"></use>
+                    </svg>
+                    Средний
+                </label>
+                
+                <input type="radio" name="priority" value="high" id="priority-high" class="priority-btn__input" {% if task.priority.value == 'high' %}checked{% endif %}>
+                <label for="priority-high" class="priority-btn priority-btn--high">
+                    <svg class="icon icon--sm">
+                        <use href="#icon-priority-high"></use>
+                    </svg>
+                    Высокий
+                </label>
+            </div>
         </div>
         
         <div class="form-field">
@@ -83,12 +99,6 @@
                 <svg class="icon">
                     <use href="#icon-x"></use>
                 </svg>
-                Отмена
-            </a>
-        </div>
-            </button>
-            <a href="{{ url_for('task_detail', task_id=task.id, telegram_id=telegram_id) }}" 
-               class="btn-secondary">
                 Отмена
             </a>
         </div>
