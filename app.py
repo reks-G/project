@@ -22,9 +22,7 @@ STATUS_TYPES = {
 
 app = Flask(__name__)
 
-# Импорт функций уведомлений из bot.py
 def send_notification_async(telegram_id, notification_func, *args):
-    """Отправить уведомление асинхронно"""
     def send():
         try:
             from bot import notify_task_created, notify_task_completed, notify_task_deleted, notify_task_updated
@@ -36,7 +34,6 @@ def send_notification_async(telegram_id, notification_func, *args):
     thread.start()
 
 def get_or_create_user(telegram_id):
-    """Получить или создать пользователя"""
     session = get_session()
     user = session.query(User).filter_by(telegram_id=telegram_id).first()
     
@@ -60,7 +57,6 @@ def index():
     session = get_session()
     query = session.query(Task).filter_by(user_id=user_id)
     
-    # Оптимизированные фильтры
     now = datetime.now()
     if filter_type == 'today':
         today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
@@ -91,7 +87,6 @@ def create_task():
     errors = []
     
     if request.method == 'POST':
-        # Validate form data
         title = request.form.get('title', '').strip()
         description = request.form.get('description', '').strip()
         priority = request.form.get('priority', 'medium')
@@ -128,7 +123,6 @@ def create_task():
             session.commit()
             session.close()
             
-            # Отправить уведомление
             from bot import notify_task_created
             send_notification_async(telegram_id, notify_task_created, title)
             
@@ -165,7 +159,6 @@ def complete_task(task_id):
         task_title = task.title
         session.commit()
         
-        # Отправить уведомление
         from bot import notify_task_completed
         send_notification_async(telegram_id, notify_task_completed, task_title)
     
@@ -184,7 +177,6 @@ def delete_task(task_id):
         session.delete(task)
         session.commit()
         
-        # Отправить уведомление
         from bot import notify_task_deleted
         send_notification_async(telegram_id, notify_task_deleted, task_title)
     
@@ -234,7 +226,6 @@ def edit_task(task_id):
             session.commit()
             session.close()
             
-            # Отправить уведомление
             from bot import notify_task_updated
             send_notification_async(telegram_id, notify_task_updated, title)
             
@@ -252,7 +243,6 @@ def calendar():
     user_id = get_or_create_user(telegram_id)
     
     session = get_session()
-    # Получить все задачи с датами
     tasks = session.query(Task).filter_by(user_id=user_id).filter(Task.due_at.isnot(None)).order_by(Task.due_at).all()
     session.close()
     
@@ -268,7 +258,6 @@ def notifications():
     user_id = get_or_create_user(telegram_id)
     
     session = get_session()
-    # Получить последние задачи как "уведомления"
     tasks = session.query(Task).filter_by(user_id=user_id).order_by(Task.created_at.desc()).limit(20).all()
     session.close()
     

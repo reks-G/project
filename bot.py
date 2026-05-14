@@ -16,7 +16,6 @@ def webapp_button():
     return markup
 
 def send_notification(telegram_id, message_text):
-    """Отправить уведомление пользователю"""
     try:
         bot.send_message(telegram_id, message_text, reply_markup=webapp_button())
         return True
@@ -25,22 +24,18 @@ def send_notification(telegram_id, message_text):
         return False
 
 def notify_task_created(telegram_id, task_title):
-    """Уведомление о создании задачи"""
     message = f'✅ <b>Задача создана</b>\n\n📝 {task_title}'
     return send_notification(telegram_id, message)
 
 def notify_task_completed(telegram_id, task_title):
-    """Уведомление о завершении задачи"""
     message = f'🎉 <b>Задача завершена!</b>\n\n✓ {task_title}'
     return send_notification(telegram_id, message)
 
 def notify_task_deleted(telegram_id, task_title):
-    """Уведомление об удалении задачи"""
     message = f'🗑 <b>Задача удалена</b>\n\n{task_title}'
     return send_notification(telegram_id, message)
 
 def notify_task_updated(telegram_id, task_title):
-    """Уведомление об обновлении задачи"""
     message = f'📝 <b>Задача обновлена</b>\n\n{task_title}'
     return send_notification(telegram_id, message)
 
@@ -53,18 +48,12 @@ def start_handler(message):
         reply_markup=webapp_button()
     )
 
-# ============================================
-# ПЛАНИРОВЩИК УВЕДОМЛЕНИЙ
-# ============================================
-
 def check_upcoming_tasks():
-    """Проверить задачи с приближающимся дедлайном"""
     while True:
         try:
             session = get_session()
             now = datetime.now()
             
-            # Найти задачи с дедлайном через 25-35 минут (окно 10 минут)
             start_window = now + timedelta(minutes=25)
             end_window = now + timedelta(minutes=35)
             
@@ -93,23 +82,18 @@ def check_upcoming_tasks():
         except Exception as e:
             print(f'❌ Ошибка проверки задач: {e}')
         
-        # Проверять каждые 5 минут
         time.sleep(300)
 
 def send_deadline_reminder(telegram_id, task):
-    """Отправить красивое напоминание о дедлайне"""
-    # Рассчитать оставшееся время
     time_left = task.due_at - datetime.now()
     minutes_left = int(time_left.total_seconds() / 60)
     
-    # Определить эмодзи приоритета
     priority_emoji = {
         'low': '🟢',
         'medium': '🟡',
         'high': '🔴'
     }
     
-    # Красивое сообщение
     message = f"""
 ⏰ <b>Напоминание о задаче</b>
 
@@ -123,7 +107,6 @@ def send_deadline_reminder(telegram_id, task):
 <i>Не забудьте выполнить задачу вовремя! 💪</i>
 """
     
-    # Кнопка для открытия задачи
     markup = InlineKeyboardMarkup()
     task_url = f"{WEBAPP_URL}/task/{task.id}?telegram_id={telegram_id}"
     
@@ -151,7 +134,6 @@ def send_deadline_reminder(telegram_id, task):
         print(f'Ошибка отправки сообщения: {e}')
 
 def start_scheduler():
-    """Запустить планировщик в фоновом потоке"""
     scheduler_thread = threading.Thread(target=check_upcoming_tasks, daemon=True)
     scheduler_thread.start()
     print('📅 Планировщик уведомлений запущен')
