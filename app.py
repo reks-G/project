@@ -258,7 +258,15 @@ def notifications():
     user_id = get_or_create_user(telegram_id)
     
     session = get_session()
-    tasks = session.query(Task).filter_by(user_id=user_id).order_by(Task.created_at.desc()).limit(20).all()
+    now = datetime.now()
+    notification_window = now + timedelta(hours=24)
+    
+    tasks = session.query(Task).filter_by(user_id=user_id).filter(
+        Task.due_at.isnot(None),
+        Task.due_at >= now,
+        Task.due_at <= notification_window,
+        Task.status.in_([StatusEnum.pending, StatusEnum.in_progress])
+    ).order_by(Task.due_at).all()
     session.close()
     
     return render_template('notifications.html', 
