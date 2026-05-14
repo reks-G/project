@@ -17,14 +17,6 @@
                 </svg>
                 Список
             </a>
-            <a href="{{ url_for('index', telegram_id=telegram_id, view='timeline', filter=filter_type) }}" 
-               class="topbar__btn {% if view_mode == 'timeline' %}active{% endif %}"
-               {% if view_mode == 'timeline' %}aria-current="true"{% endif %}>
-                <svg class="icon icon--sm">
-                    <use href="#icon-clock"></use>
-                </svg>
-                Время
-            </a>
             <a href="{{ url_for('index', telegram_id=telegram_id, view='board', filter=filter_type) }}" 
                class="topbar__btn {% if view_mode == 'board' %}active{% endif %}"
                {% if view_mode == 'board' %}aria-current="true"{% endif %}>
