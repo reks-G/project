@@ -77,12 +77,31 @@ def check_upcoming_tasks():
                 except Exception as e:
                     print(f'❌ Ошибка отправки уведомления для задачи {task.id}: {e}')
             
+            cleanup_old_tasks(session, now)
+            
             session.close()
             
         except Exception as e:
             print(f'❌ Ошибка проверки задач: {e}')
         
         time.sleep(300)
+
+def cleanup_old_tasks(session, now):
+    try:
+        week_ago = now - timedelta(days=7)
+        
+        old_tasks = session.query(Task).filter(
+            Task.due_at < week_ago,
+            Task.status != StatusEnum.completed
+        ).all()
+        
+        if old_tasks:
+            for task in old_tasks:
+                session.delete(task)
+            session.commit()
+            print(f'🗑 Удалено {len(old_tasks)} просроченных задач старше недели')
+    except Exception as e:
+        print(f'❌ Ошибка очистки старых задач: {e}')
 
 def send_deadline_reminder(telegram_id, task):
     time_left = task.due_at - datetime.now()
