@@ -138,7 +138,8 @@ def create_task():
         else:
             print(f'DEBUG: Errors: {errors}')
     
-    return render_template('create.html', telegram_id=telegram_id, errors=errors)
+    default_datetime = datetime.now().strftime('%Y-%m-%dT%H:%M')
+    return render_template('create.html', telegram_id=telegram_id, errors=errors, default_datetime=default_datetime)
 
 @app.route('/task/<int:task_id>')
 def task_detail(task_id):
