@@ -66,7 +66,11 @@ def index():
         week_end = now + timedelta(days=7)
         query = query.filter(Task.due_at >= now, Task.due_at < week_end)
     elif filter_type == 'overdue':
-        query = query.filter(Task.due_at < now, Task.status == StatusEnum.pending)
+        query = query.filter(
+            Task.due_at < now,
+            Task.due_at.isnot(None),
+            Task.status.in_([StatusEnum.pending, StatusEnum.in_progress])
+        )
     elif filter_type == 'active':
         query = query.filter(Task.status.in_([StatusEnum.pending, StatusEnum.in_progress]))
     
