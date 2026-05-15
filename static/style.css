@@ -922,6 +922,36 @@ select[name="priority"] {
   color: var(--color-text-secondary);
   line-height: 1.6;
 }
+
+.notification-item__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-2);
+}
+
+.notification-item__time {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-warning);
+}
+
+.notification-item__time--urgent {
+  color: var(--color-error);
+}
+
+.notification-item--urgent {
+  border-color: rgba(239, 68, 68, 0.3);
+  background: rgba(239, 68, 68, 0.05);
+}
+
+.icon--warning {
+  stroke: var(--color-warning);
+}
+
+.icon--error {
+  stroke: var(--color-error);
+}
 .task-detail {
   max-width: 800px;
   background: var(--color-bg-glass);

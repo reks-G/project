@@ -18,33 +18,39 @@
     </div>
 
     <div class="notifications-list">
-        {% if tasks %}
-            {% for task in tasks %}
-                <div class="notification-item">
+        {% if notifications %}
+            {% for notif in notifications %}
+                <div class="notification-item {% if notif.is_urgent %}notification-item--urgent{% endif %}">
                     <div class="notification-item__icon">
-                        {% if task.status.value == 'completed' %}
-                            <svg class="icon icon--success"><use href="#icon-check"></use></svg>
-                        {% else %}
-                            <svg class="icon icon--primary"><use href="#icon-bell"></use></svg>
-                        {% endif %}
+                        <svg class="icon {% if notif.is_urgent %}icon--error{% else %}icon--warning{% endif %}">
+                            <use href="#icon-alert"></use>
+                        </svg>
                     </div>
                     <div class="notification-item__content">
-                        <a href="{{ url_for('task_detail', task_id=task.id, telegram_id=telegram_id) }}" class="notification-item__title">
-                            {{ task.title }}
-                        </a>
-                        <div class="notification-item__meta">
-                            <span class="status status--{{ task.status.value }}">
-                                {{ status_types[task.status.value] }}
+                        <div class="notification-item__header">
+                            <span class="priority priority--{{ notif.task.priority.value }}">
+                                {{ notif.task.priority.value|upper }}
                             </span>
-                            {% if task.due_at %}
-                                <span class="notification-item__date">
-                                    {{ task.due_at.strftime('%d.%m.%Y %H:%M') }}
-                                </span>
-                            {% endif %}
+                            <span class="notification-item__time {% if notif.is_urgent %}notification-item__time--urgent{% endif %}">
+                                {{ notif.time_left }}
+                            </span>
                         </div>
-                        {% if task.description %}
-                            <p class="notification-item__text">{{ task.description[:100] }}{% if task.description|length > 100 %}...{% endif %}</p>
-                        {% endif %}
+                        <a href="{{ url_for('task_detail', task_id=notif.task.id, telegram_id=telegram_id) }}" class="notification-item__title">
+                            {{ notif.task.title }}
+                        </a>
+                        <p class="notification-item__text">
+                            {% if notif.is_urgent %}
+                                ⚠️ Срочно! Задача скоро будет просрочена
+                            {% else %}
+                                Приближается дедлайн задачи
+                            {% endif %}
+                        </p>
+                        <div class="notification-item__meta">
+                            <span class="notification-item__date">
+                                <svg class="icon icon--xs"><use href="#icon-clock"></use></svg>
+                                Дедлайн: {{ notif.task.due_at.strftime('%d.%m.%Y %H:%M') }}
+                            </span>
+                        </div>
                     </div>
                 </div>
             {% endfor %}
@@ -52,7 +58,7 @@
             <div class="empty-state">
                 <svg class="empty-state__icon"><use href="#icon-bell"></use></svg>
                 <h3 class="empty-state__title">Нет срочных задач</h3>
-                <p class="empty-state__text">Задачи с дедлайном в ближайшие 2 часа будут отображаться здесь</p>
+                <p class="empty-state__text">Задачи с дедлайном в ближайшие 24 часа будут отображаться здесь</p>
             </div>
         {% endif %}
     </div>

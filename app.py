@@ -263,7 +263,7 @@ def notifications():
     
     session = get_session()
     now = datetime.now()
-    notification_window = now + timedelta(hours=2)
+    notification_window = now + timedelta(hours=24)
     
     tasks = session.query(Task).filter_by(user_id=user_id).filter(
         Task.due_at.isnot(None),
@@ -271,10 +271,29 @@ def notifications():
         Task.due_at <= notification_window,
         Task.status.in_([StatusEnum.pending, StatusEnum.in_progress])
     ).order_by(Task.due_at).all()
+    
+    notifications_list = []
+    for task in tasks:
+        time_left = task.due_at - now
+        hours_left = int(time_left.total_seconds() / 3600)
+        minutes_left = int((time_left.total_seconds() % 3600) / 60)
+        
+        if hours_left > 0:
+            time_text = f"через {hours_left} ч {minutes_left} мин"
+        else:
+            time_text = f"через {minutes_left} мин"
+        
+        notifications_list.append({
+            'task': task,
+            'time_left': time_text,
+            'hours_left': hours_left,
+            'is_urgent': hours_left < 2
+        })
+    
     session.close()
     
     return render_template('notifications.html', 
-                         tasks=tasks, 
+                         notifications=notifications_list,
                          telegram_id=telegram_id,
                          priority_levels=PRIORITY_LEVELS,
                          status_types=STATUS_TYPES)
